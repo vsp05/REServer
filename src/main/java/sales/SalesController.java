@@ -14,8 +14,8 @@ public class SalesController {
     }
 
     public void createSale(Context ctx) {
-        // TO DO override Validator exception method to report better error message
 
+        // TO DO override Validator exception method to report better error message
         HomeSale sale = ctx.bodyValidator(HomeSale.class)
                             .get();
         if (homeSales.newSale(sale)) {
@@ -34,7 +34,7 @@ public class SalesController {
             ctx.status(404);
         } else {
             ctx.json(allSales);
-            ctx.status(404);
+            ctx.status(200);
         }
     }
 
