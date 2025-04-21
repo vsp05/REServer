@@ -39,15 +39,21 @@ public class REServer {
             // configure endpoint handlers to process HTTP requests
             JavalinConfig config = new JavalinConfig();
             config.router.apiBuilder(() -> {
+                // Sales records are immutable hence no PUT and DELETE
+
+                // return a sale by sale ID
                 app.get("/sales/{saleID}", ctx -> {
                     salesHandler.getSaleByID(ctx, ctx.pathParam("saleID"));
                 });
+                // get all sales records - could be big!
                 app.get("/sales", ctx -> {
                     salesHandler.getAllSales(ctx);
                 });
+                // create a new sales record
                 app.post("/sales", ctx -> {
                     salesHandler.createSale(ctx);
                 });
+                // Get all sales for a specified postcode
                 app.get("/sales/postcode/{postcode}", ctx -> {
                     salesHandler.findSaleByPostCode(ctx, ctx.pathParam("postcode"));
                 });

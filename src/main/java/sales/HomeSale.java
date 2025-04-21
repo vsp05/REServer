@@ -13,6 +13,7 @@ public class HomeSale {
         this.salePrice = salePrice;
     }
 
+    // needed for JSON conversion
     public HomeSale() {}
 
 

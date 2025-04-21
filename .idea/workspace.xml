@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="de501043-aafb-4a41-9e24-49285bd605ad" name="Changes" comment="initial commit">
+    <list default="true" id="de501043-aafb-4a41-9e24-49285bd605ad" name="Changes" comment="minor fixes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/REServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/REServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sales/HomeSale.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/sales/HomeSale.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/sales/SalesController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/sales/SalesController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sales/SalesDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/sales/SalesDAO.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,6 +26,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "gortonator"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/gortonator/REServer.git",
+    "accountId": "7b8a9b25-7657-4afd-8d68-70e5dda30c83"
+  }
+}]]></component>
   <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
   <component name="KubernetesApiProvider"><![CDATA[{
   "isMigrated": true
@@ -97,7 +112,7 @@
       <updated>1733883333186</updated>
       <workItem from="1733883334259" duration="7168000" />
       <workItem from="1744088450565" duration="24918000" />
-      <workItem from="1744234066152" duration="32331000" />
+      <workItem from="1744234066152" duration="45300000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -107,7 +122,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744877428176</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="minor fixes">
+      <option name="closed" value="true" />
+      <created>1744882612369</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1744882612369</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -126,14 +149,15 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="initial commit" />
+    <MESSAGE value="minor fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="minor fixes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/app/REServer.java</url>
-          <line>42</line>
+          <line>45</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
