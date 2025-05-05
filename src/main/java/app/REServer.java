@@ -7,23 +7,12 @@ import sales.SalesController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//import io.javalin.openapi.plugin.OpenApiConfiguration;
-//import io.javalin.openapi.plugin.OpenApiPlugin;
-//import io.javalin.openapi.plugin.redoc.ReDocConfiguration;
-//import io.javalin.openapi.plugin.redoc.ReDocPlugin;
-//import io.javalin.openapi.plugin.swagger.SwaggerConfiguration;
-//import io.javalin.openapi.plugin.swagger.SwaggerPlugin;
-
-//import static io.javalin.apibuilder.ApiBuilder.*;
 
 
 public class REServer {
         private static final Logger LOG = LoggerFactory.getLogger(REServer.class);
 
         public static void main(String[] args) {
-
-            LOG.info("hello {}!","world");
-
 
             // in memory test data store
             var sales = new SalesDAO();
