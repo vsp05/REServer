@@ -1,5 +1,8 @@
 package sales;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,17 +11,47 @@ import java.util.stream.Collectors;
 
 public class SalesDAO {
 
-    // List to hold test data
-    private  List<HomeSale> sales = new ArrayList<>();
-
+    // List to hold data loaded from CSV
+    private List<HomeSale> sales = new ArrayList<>();
+    private static final String CSV_FILE_PATH = "src/main/java/app/nsw_property_data.csv";
 
     public SalesDAO() {
-        // create some test data
-        sales.add(new HomeSale("0", "2257", "2000000"));
-        sales.add(new HomeSale("1", "2262", "1300000"));
-        sales.add(new HomeSale("2", "2000", "4000000"));
-        sales.add(new HomeSale("3", "2000", "1000000"));
-      }
+        loadSalesFromCSV();
+    }
+
+    /**
+     * Loads sales data from the CSV file
+     */
+    private void loadSalesFromCSV() {
+        try {
+            // Read the CSV file
+            try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE_PATH))) {
+                String line;
+                boolean isFirstLine = true;
+                
+                while ((line = br.readLine()) != null) {
+                    if (isFirstLine) {
+                        isFirstLine = false;
+                        continue;
+                    }
+                    
+                    String[] values = line.split(",");
+                    if (values.length >= 3) {
+                        String saleID = values[0].trim();
+                        String postcode = values[6].trim();
+                        String salePrice = values[3].trim();
+                        
+                        sales.add(new HomeSale(saleID, postcode, salePrice));
+                    }
+                }
+                
+                System.out.println("Successfully loaded " + sales.size() + " sales from CSV file.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading CSV file: " + e.getMessage());
+            System.err.println("Using default test data instead.");
+        }
+    }
 
     public boolean newSale (HomeSale homeSale){
             sales.add(homeSale);
