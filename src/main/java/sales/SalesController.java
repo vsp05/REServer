@@ -64,6 +64,42 @@ public class SalesController {
         }
     }
 
+    // implements GET /average-price/dates/{startDate}/{endDate}
+    // format dates as YYYY-MM-DD
+    public void getAveragePriceByDateRange(Context ctx, String startDate, String endDate) {
+        double averagePrice = homeSales.getAveragePriceByDateRange(startDate, endDate);
+        if (averagePrice == 0.0) {
+            ctx.result("No prices found for date range. Try formatting dates as YYYY-MM-DD");
+            ctx.status(404);
+        } else {
+            ctx.json(averagePrice);
+            ctx.status(200);
+        }
+    }
+
+    // implements GET /sales/under/{price}
+    public void getSalesUnderPrice(Context ctx, String price) {
+        int priceInt = Integer.parseInt(price);
+
+        if (priceInt <= 0) {
+            ctx.result("Invalid price specified");
+            ctx.status(400);
+            return;
+        }
+
+        // Get list of sales under the specified price
+        List<HomeSale> totalSales = homeSales.getSalesUnderPrice(priceInt);
+
+        if (totalSales.isEmpty()) {
+            ctx.result("No sales under price found");
+            ctx.status(404);
+        } else {
+            ctx.json(totalSales);
+            ctx.status(200);
+        }
+    }
+
+
     private Context error(Context ctx, String msg, int code) {
         ctx.result(msg);
         ctx.status(code);

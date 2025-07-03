@@ -176,4 +176,39 @@ public class SalesDAO {
             return Collections.emptyList();
         }
     }
+
+    // gets the average price for a given date range
+    public double getAveragePriceByDateRange(String startDate, String endDate) {
+        List<HomeSale> sales = new ArrayList<>();
+        try {
+            collection.find(Filters.and(Filters.gte("contract_date", startDate), Filters.lte("contract_date", endDate)))
+                    .forEach(doc -> sales.add(documentToHomeSale(doc)));
+
+            double averagePrice = 0.0;
+
+            for (HomeSale sale : sales) {
+                averagePrice += sale.purchase_price;
+            }
+
+            averagePrice /= sales.size();
+            return Math.round(averagePrice * 100.0) / 100.0;
+        } catch (MongoException e) {
+            System.err.println("No prices found for date range. Try formatting dates as YYYY-MM-DD");
+            return 0.0;
+        }
+    }
+
+    // returns a list of sales under a given price
+    public List<HomeSale> getSalesUnderPrice(int price) {
+        List<HomeSale> sales = new ArrayList<>();
+        try {
+            collection.find(Filters.lt("purchase_price", price))
+                    .forEach(doc -> sales.add(documentToHomeSale(doc)));
+            return sales;
+        } catch (MongoException e) {
+            System.err.println("Error counting sales under price: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
 }

@@ -46,6 +46,15 @@ public class REServer {
                 app.get("/sales/postcode/{postcode}", ctx -> {
                     salesHandler.findSaleByPostCode(ctx, ctx.pathParam("postcode"));
                 });
+                // Get average price for a specified date range
+                // format dates as YYYY-MM-DD
+                app.get("/average-price/dates/{startDate}/{endDate}", ctx -> {
+                    salesHandler.getAveragePriceByDateRange(ctx, ctx.pathParam("startDate"), ctx.pathParam("endDate"));
+                });
+                // Get list of sales under a specified price
+                app.get("/sales/under/{price}", ctx -> {
+                    salesHandler.getSalesUnderPrice(ctx, ctx.pathParam("price"));
+                }); 
             });
 
 
