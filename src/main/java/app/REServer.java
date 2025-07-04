@@ -39,13 +39,13 @@ public class REServer {
                 config.router.apiBuilder(() -> {
                     ApiBuilder.path("sales", () -> {
                         // get all sales records - could be big!
-                        ApiBuilder.get(salesHandler::getAllSales);
+                        ApiBuilder.get(salesHandler::handleAllSales);
                         // create a new sales record
                         ApiBuilder.post(salesHandler::createSale);
 
                         // return a sale by sale ID
                         ApiBuilder.path("{saleID}", () -> {
-                            ApiBuilder.get(ctx -> salesHandler.getSaleByID(ctx, ctx.pathParam("saleID")));
+                            ApiBuilder.get(ctx -> salesHandler.handleSaleByID(ctx, ctx.pathParam("saleID")));
                         });
 
                         // Get all sales for a specified postcode
@@ -56,12 +56,12 @@ public class REServer {
                         // Get average price for a specified date range
                         // format dates as YYYY-MM-DD
                         ApiBuilder.path("/average-price/dates/{startDate}/{endDate}", () -> {
-                            ApiBuilder.get(ctx -> salesHandler.getAveragePriceByDateRange(ctx, ctx.pathParam("startDate"), ctx.pathParam("endDate")));
+                            ApiBuilder.get(ctx -> salesHandler.handleAveragePriceByDateRange(ctx, ctx.pathParam("startDate"), ctx.pathParam("endDate")));
                         });
 
                         // Get list of sales under a specified price
                         ApiBuilder.path("/sales/under/{price}", () -> {
-                            ApiBuilder.get(ctx -> salesHandler.getSalesUnderPrice(ctx, ctx.pathParam("price")));
+                            ApiBuilder.get(ctx -> salesHandler.handleSalesUnderPrice(ctx, ctx.pathParam("price")));
                         });
                     });
                 });
