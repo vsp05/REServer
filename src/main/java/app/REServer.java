@@ -60,7 +60,7 @@ public class REServer {
                         });
 
                         // Get list of sales under a specified price
-                        ApiBuilder.path("/sales/under/{price}", () -> {
+                        ApiBuilder.path("/under/{price}", () -> {
                             ApiBuilder.get(ctx -> salesHandler.handleSalesUnderPrice(ctx, ctx.pathParam("price")));
                         });
                     });
