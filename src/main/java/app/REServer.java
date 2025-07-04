@@ -1,17 +1,17 @@
 package app;
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
+import io.javalin.config.RouterConfig;
 import sales.SalesDAO;
 import sales.SalesController;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings({"PMD.UseUtilityClass", "PMD.LawOfDemeter"})
 
 
 public class REServer {
-        private static final Logger LOG = LoggerFactory.getLogger(REServer.class);
-
         public static void main(String[] args) {
 
             // in memory test data store
@@ -27,7 +27,8 @@ public class REServer {
 
             // configure endpoint handlers to process HTTP requests
             JavalinConfig config = new JavalinConfig();
-            config.router.apiBuilder(() -> {
+            RouterConfig router = config.router;
+            router.apiBuilder(() -> {
                 // Sales records are immutable hence no PUT and DELETE
 
                 // return a sale by sale ID
