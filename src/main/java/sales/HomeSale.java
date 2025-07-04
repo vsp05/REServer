@@ -4,8 +4,8 @@ package sales;
 
 public class HomeSale {
     
-    public  int property_id;
-    public  String download_date;
+    public  int propertyID;
+    public  String downloadDate;
     public  String council_name;
     public int purchase_price;
     public String address;
@@ -18,16 +18,16 @@ public class HomeSale {
     public String contract_data;
     public String settlement_date;
     public String zoning;
-    public String nature_of_property;
+    public String nature_of_property; //NOPMD - suppressed LongVariable - TODO explain reason for suppression
     public String primary_purpose;
     public String legal_description;
 
 
-    public HomeSale(int property_id, String download_date, String council_name, int purchase_price, String address, int post_code,
+    public HomeSale(int propertyID, String downloadDate, String council_name, int purchase_price, String address, int post_code,
     String property_type, String strata_lot_number, String property_name, int area, String area_type, String contract_data, 
-    String settlement_date, String zoning, String nature_of_property, String primary_purpose, String legal_description) {
-       this.property_id = property_id;
-       this.download_date = download_date;
+    String settlement_date, String zoning, String nature_of_property, String primary_purpose, String legal_description) { //NOPMD - suppressed LongVariable - TODO explain reason for suppression
+       this.propertyID = propertyID;
+       this.downloadDate = downloadDate;
        this.council_name = council_name;       
        this.purchase_price = purchase_price;
        this.address = address;

@@ -27,14 +27,14 @@ public class SalesDAO {
         ServerApi serverApi = ServerApi.builder()
         .version(ServerApiVersion.V1)
         .build();
-        MongoClientSettings settings = MongoClientSettings.builder()
+        final MongoClientSettings settings = MongoClientSettings.builder()
         .applyConnectionString(new ConnectionString(uri))
         .serverApi(serverApi)
         .build();
 
         try {
             mongoClient = MongoClients.create(settings);
-            MongoDatabase database = mongoClient.getDatabase("homesale");
+            final MongoDatabase database = mongoClient.getDatabase("homesale");
             collection = database.getCollection("sales");
             System.out.println("Connected to MongoDB");
         } catch (MongoException e) {
@@ -44,10 +44,10 @@ public class SalesDAO {
 
     private Document homeSaleToDocument(HomeSale homeSale) {
         return new Document()
-                .append("property_id", homeSale.property_id)
+                .append("propertyID", homeSale.propertyID)
                 .append("post_code", homeSale.post_code)
                 .append("purchase_price", homeSale.purchase_price)
-                .append("download_date", homeSale.download_date)
+                .append("downloadDate", homeSale.downloadDate)
                 .append("council_name", homeSale.council_name)
                 .append("address", homeSale.address)
                 .append("property_type", homeSale.property_type)
@@ -64,34 +64,37 @@ public class SalesDAO {
     }
 
     private Integer parseToInt(Object obj) {
+        Integer result = 0; // default value
         if (obj instanceof Integer) {
-            return (Integer) obj;
+            result = (Integer) obj;
         } else if (obj instanceof String) {
             if (obj.equals("")) {
-                return 0;
+                result = 0;
+            } else {
+                result = Integer.parseInt((String) obj);
             }
-            return Integer.parseInt((String) obj);
         } else if (obj instanceof Double) {
-            return ((Double) obj).intValue();
+            result = ((Double) obj).intValue();
         }
-        return 0;
+        return result;
     }
 
     private String parseToString(Object obj) {
+        String result = ""; // default value
         if (obj instanceof Integer) {
-            return Integer.toString((Integer) obj);
+            result = Integer.toString((Integer) obj);
         } else if (obj instanceof String) {
-            return (String) obj;
+            result = (String) obj;
         } else if (obj instanceof Double) {
-            return Double.toString((Double) obj);
+            result = Double.toString((Double) obj);
         }
-        return "";
+        return result;
     }
 
     private HomeSale documentToHomeSale(Document doc) {
         return new HomeSale(
-               parseToInt(doc.get("property_id")),
-               doc.getString("download_date"),
+               parseToInt(doc.get("propertyID")),
+               doc.getString("downloadDate"),
                doc.getString("council_name"),
                parseToInt(doc.get("purchase_price")),
                doc.getString("address"),
@@ -111,104 +114,127 @@ public class SalesDAO {
     }
 
     public boolean newSale(HomeSale homeSale) {
+        boolean success = false;
         try {
-            Document doc = homeSaleToDocument(homeSale);
+            final Document doc = homeSaleToDocument(homeSale);
             collection.insertOne(doc);
-            System.out.println("Successfully inserted sale with ID: " + homeSale.property_id);
-            return true;
+            System.out.println("Successfully inserted sale with ID: " + homeSale.propertyID);
+            success = true;
         } catch (MongoException e) {
             System.err.println("Error inserting sale: " + e.getMessage());
-            return false;
+            success = false; // explicit for clarity, though already false
         }
+        return success;
     }
 
-    public Optional<HomeSale> getSaleById(String property_id) {
+    public Optional<HomeSale> handleSaleByID(String propertyID) {
+        Optional<HomeSale> result = Optional.empty(); // default value
+
         try {
-            Document doc = collection.find(Filters.eq("property_id", parseToInt(property_id))).first();
+            final Document doc = collection.find(Filters.eq("propertyID", parseToInt(propertyID))).first();
             if (doc != null) {
-                System.out.println("Sale found with ID: " + property_id);
-                return Optional.of(documentToHomeSale(doc));
+                System.out.println("Sale found with ID: " + propertyID);
+                result = Optional.of(documentToHomeSale(doc));
             }
-            return Optional.empty();
+            // if doc is null, result remains Optional.empty()
         } catch (MongoException e) {
             System.err.println("Error finding sale by ID: " + e.getMessage());
-            return Optional.empty();
+            // result remains Optional.empty()
         }
+
+        return result;
     }
 
     // returns a List of homesales  in a given postCode
     public List<HomeSale> getSalesByPostCode(String postCode) {
         System.out.println("Searching for post_code: " + postCode);
         List<HomeSale> sales = new ArrayList<>();
+
         try {
+            List<HomeSale> finalSales = sales;
             collection.find(Filters.eq("post_code", parseToInt(postCode)))
-                    .forEach(doc -> sales.add(documentToHomeSale(doc)));
+                .forEach(doc -> finalSales.add(documentToHomeSale(doc)));
             System.out.println("Found " + sales.size() + " sales for post_code: " + postCode);
-            return sales;
         } catch (MongoException e) {
             System.err.println("Error finding sales by post_code: " + e.getMessage());
-            return Collections.emptyList();
+            sales = Collections.emptyList(); // Reset to empty list on error
         }
+        return sales;
     }
 
     // returns the individual prices for all sales. Potentially large
-    public List<String> getAllSalePrices() {
+    public List<String> handleAllSalePrices() {
         List<String> prices = new ArrayList<>();
+
         try {
+            List<String> finalPrices = prices;
             collection.find()
-                    .forEach(doc -> prices.add(doc.getString("purchase_price")));
-            return prices;
+                .forEach(doc -> finalPrices.add(doc.getString("purchase_price")));
         } catch (MongoException e) {
             System.err.println("Error getting all sale prices: " + e.getMessage());
-            return Collections.emptyList();
+            prices = Collections.emptyList(); // Reset to empty list on error
         }
+
+        return prices;
     }
 
     // returns all home sales. Potentially large
-    public List<HomeSale> getAllSales() {
+    public List<HomeSale> handleAllSales() {
         List<HomeSale> sales = new ArrayList<>();
+
         try {
+            List<HomeSale> finalSales = sales;
             collection.find()
-                    .forEach(doc -> sales.add(documentToHomeSale(doc)));
-            return sales;
+                .forEach(doc -> finalSales.add(documentToHomeSale(doc)));
         } catch (MongoException e) {
             System.err.println("Error getting all sales: " + e.getMessage());
-            return Collections.emptyList();
+            sales = Collections.emptyList(); // Reset to empty list on error
         }
+
+        return sales;
     }
 
     // gets the average price for a given date range
-    public double getAveragePriceByDateRange(String startDate, String endDate) {
+    public double handleAveragePriceByDateRange(String startDate, String endDate) {
         List<HomeSale> sales = new ArrayList<>();
+        double result = 0.0; // default value
+
         try {
             collection.find(Filters.and(Filters.gte("contract_date", startDate), Filters.lte("contract_date", endDate)))
-                    .forEach(doc -> sales.add(documentToHomeSale(doc)));
+                .forEach(doc -> sales.add(documentToHomeSale(doc)));
 
-            double averagePrice = 0.0;
+            if (!sales.isEmpty()) {
+                double averagePrice = 0.0;
 
-            for (HomeSale sale : sales) {
-                averagePrice += sale.purchase_price;
+                for (final HomeSale sale : sales) {
+                    averagePrice += sale.purchase_price;
+                }
+
+                averagePrice /= sales.size();
+                result = Math.round(averagePrice * 100.0) / 100.0;
             }
-
-            averagePrice /= sales.size();
-            return Math.round(averagePrice * 100.0) / 100.0;
         } catch (MongoException e) {
             System.err.println("No prices found for date range. Try formatting dates as YYYY-MM-DD");
-            return 0.0;
+            // result remains 0.0
         }
+
+        return result;
     }
 
     // returns a list of sales under a given price
-    public List<HomeSale> getSalesUnderPrice(int price) {
+    public List<HomeSale> handleSalesUnderPrice(int price) {
         List<HomeSale> sales = new ArrayList<>();
+
         try {
+            List<HomeSale> finalSales = sales;
             collection.find(Filters.lt("purchase_price", price))
-                    .forEach(doc -> sales.add(documentToHomeSale(doc)));
-            return sales;
+                .forEach(doc -> finalSales.add(documentToHomeSale(doc)));
         } catch (MongoException e) {
             System.err.println("Error counting sales under price: " + e.getMessage());
-            return Collections.emptyList();
+            sales = Collections.emptyList(); // Reset to empty list on error
         }
+
+        return sales;
     }
 
 }
