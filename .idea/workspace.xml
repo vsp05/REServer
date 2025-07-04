@@ -5,8 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="de501043-aafb-4a41-9e24-49285bd605ad" name="Changes" comment="remove unused imports">
-      <change afterPath="$PROJECT_DIR$/.idea/google-java-format.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sales/SalesController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/sales/SalesController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/sales/SalesDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/sales/SalesDAO.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

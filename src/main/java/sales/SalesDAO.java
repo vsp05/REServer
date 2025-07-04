@@ -93,8 +93,8 @@ public class SalesDAO {
 
     private HomeSale documentToHomeSale(final Document doc) {
         return new HomeSale(
-               parseToInt(doc.get("propertyID")),
-               doc.getString("downloadDate"),
+               parseToInt(doc.get("property_id")),
+               doc.getString("download_date"),
                doc.getString("council_name"),
                parseToInt(doc.get("purchase_price")),
                doc.getString("address"),
@@ -129,7 +129,7 @@ public class SalesDAO {
         Optional<HomeSale> result = Optional.empty(); // default value
 
         try {
-            final Document doc = collection.find(Filters.eq("propertyID", parseToInt(propertyID))).first();
+            final Document doc = collection.find(Filters.eq("property_id", parseToInt(propertyID))).first();
             if (doc != null) {
                 result = Optional.of(documentToHomeSale(doc));
             }
@@ -204,7 +204,7 @@ public class SalesDAO {
                 result = Math.round(averagePrice * 100.0) / 100.0;
             }
         } catch (MongoException e) {
-            result = 0.0
+            result = 0.0;
         }
 
         return result;
