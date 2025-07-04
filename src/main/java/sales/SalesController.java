@@ -7,6 +7,11 @@ import java.util.Optional;
 
 public class SalesController {
 
+    // errorprone: Avoid Literals In If Condition
+    private static final double DEFAULT_AVERAGE_PRICE = 0.0;
+    private static final String NO_PRICES_MSG = "No prices found for date range. Try formatting dates as YYYY-MM-DD";
+
+
     private final SalesDAO homeSales;
 
     public SalesController(final SalesDAO homeSales) {
@@ -69,8 +74,8 @@ public class SalesController {
     // format dates as YYYY-MM-DD
     public void handleAveragePriceByDateRange(final Context ctx, final String startDate, final String endDate) {
         final double averagePrice = homeSales.handleAveragePriceByDateRange(startDate, endDate);
-        if (averagePrice == 0.0) {
-            ctx.result("No prices found for date range. Try formatting dates as YYYY-MM-DD");
+        if (averagePrice == DEFAULT_AVERAGE_PRICE) {
+            ctx.result(NO_PRICES_MSG);
             ctx.status(404);
         } else {
             ctx.json(averagePrice);

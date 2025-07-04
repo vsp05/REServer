@@ -20,6 +20,13 @@ import com.mongodb.client.model.Filters;
 @SuppressWarnings("PMD.LooseCoupling")
 public class SalesDAO {
 
+    // errorprone: Avoid Duplicate Literals
+    private static final String FIELD_PURCHASE_PRICE = "purchase_price";
+
+    // errorprone: Avoid Literals In If Condition
+    private static final String EMPTY_STRING = "";
+
+
     private final MongoCollection<Document> collection;
 
     public SalesDAO() {
@@ -45,7 +52,7 @@ public class SalesDAO {
         return new Document()
                 .append("property_id", homeSale.propertyId)
                 .append("post_code", homeSale.postCode)
-                .append("purchase_price", homeSale.purchasePrice)
+                .append(FIELD_PURCHASE_PRICE, homeSale.purchasePrice)
                 .append("download_date", homeSale.downloadDate)
                 .append("council_name", homeSale.councilName)
                 .append("address", homeSale.address)
@@ -67,7 +74,7 @@ public class SalesDAO {
         if (obj instanceof Integer) {
             result = (Integer) obj;
         } else if (obj instanceof String) {
-            if ("".equals(obj)) {
+            if (EMPTY_STRING.equals(obj)) {
                 result = 0;
             } else {
                 result = Integer.parseInt((String) obj);
@@ -96,7 +103,7 @@ public class SalesDAO {
                parseToInt(doc.get("property_id")),
                doc.getString("download_date"),
                doc.getString("council_name"),
-               parseToInt(doc.get("purchase_price")),
+               parseToInt(doc.get(FIELD_PURCHASE_PRICE)),
                doc.getString("address"),
                parseToInt(doc.get("post_code")),
                doc.getString("property_type"),
@@ -162,7 +169,7 @@ public class SalesDAO {
         try {
             List<String> finalPrices = prices;
             collection.find()
-                .forEach(doc -> finalPrices.add(doc.getString("purchase_price")));
+                .forEach(doc -> finalPrices.add(doc.getString(FIELD_PURCHASE_PRICE)));
         } catch (MongoException e) {
             prices = Collections.emptyList(); // Reset to empty list on error
         }
@@ -217,7 +224,7 @@ public class SalesDAO {
 
         try {
             List<HomeSale> finalSales = sales;
-            collection.find(Filters.lt("purchase_price", price))
+            collection.find(Filters.lt(FIELD_PURCHASE_PRICE, price))
                 .forEach(doc -> finalSales.add(documentToHomeSale(doc)));
         } catch (MongoException e) {
             sales = Collections.emptyList(); 
