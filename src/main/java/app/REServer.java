@@ -1,5 +1,9 @@
 package app;
 import io.javalin.Javalin;
+import io.javalin.apibuilder.ApiBuilder;
+import io.javalin.openapi.plugin.OpenApiPlugin;
+import io.javalin.openapi.plugin.redoc.ReDocPlugin;
+import io.javalin.openapi.plugin.swagger.SwaggerPlugin;
 import io.javalin.config.JavalinConfig;
 import io.javalin.config.RouterConfig;
 import sales.SalesDAO;
@@ -13,53 +17,56 @@ import org.slf4j.LoggerFactory;
 
 public class REServer {
         public static void main(String[] args) {
-
             // in memory test data store
             final var sales = new SalesDAO();
-
+          
             // API implementation
             final SalesController salesHandler = new SalesController(sales);
 
             // start Javalin on port 7070
-            final var app = Javalin.create()
-                    .get("/", ctx -> ctx.result("Real Estate server is running"))
-                    .start(7070);
+            Javalin.create(config -> {
+                config.registerPlugin(new OpenApiPlugin(pluginConfig -> {
+                    pluginConfig.withDefinitionConfiguration((version, definition) -> {
+                        definition.withOpenApiInfo(info -> info.setTitle("Real Estate Server Docs"));
+                    });
+                }));
+                config.registerPlugin(new SwaggerPlugin(uiConfig ->
+                        uiConfig.setUiPath("/docs/swagger")));
+                config.registerPlugin(new ReDocPlugin(uiConfig ->
+                        uiConfig.setUiPath("/docs/redoc")));
 
-            // configure endpoint handlers to process HTTP requests
-            final JavalinConfig config = new JavalinConfig();
-            RouterConfig router = config.router;
-            router.apiBuilder(() -> {
-                // Sales records are immutable hence no PUT and DELETE
+                // configure endpoint handlers to process HTTP requests
+                config.router.apiBuilder(() -> {
+                    ApiBuilder.path("sales", () -> {
+                        // get all sales records - could be big!
+                        ApiBuilder.get(salesHandler::handleAllSales);
+                        // create a new sales record
+                        ApiBuilder.post(salesHandler::createSale);
 
-                // return a sale by sale ID
-                app.get("/sales/{saleID}", ctx -> {
-                    salesHandler.handleSaleByID(ctx, ctx.pathParam("saleID"));
-                });
-                // get all sales records - could be big!
-                app.get("/sales", ctx -> {
-                    salesHandler.handleAllSales(ctx);
-                });
-                // create a new sales record
-                app.post("/sales", ctx -> {
-                    salesHandler.createSale(ctx);
-                });
-                // Get all sales for a specified postcode
-                app.get("/sales/postcode/{postcode}", ctx -> {
-                    salesHandler.findSaleByPostCode(ctx, ctx.pathParam("postcode"));
-                });
-                // Get average price for a specified date range
-                // format dates as YYYY-MM-DD
-                app.get("/average-price/dates/{startDate}/{endDate}", ctx -> {
-                    salesHandler.handleAveragePriceByDateRange(ctx, ctx.pathParam("startDate"), ctx.pathParam("endDate"));
-                });
-                // Get list of sales under a specified price
-                app.get("/sales/under/{price}", ctx -> {
-                    salesHandler.handleSalesUnderPrice(ctx, ctx.pathParam("price"));
-                }); 
-            });
+                        // return a sale by sale ID
+                        ApiBuilder.path("{saleID}", () -> {
+                            ApiBuilder.get(ctx -> salesHandler.handleSaleByID(ctx, ctx.pathParam("saleID")));
+                        });
 
+                        // Get all sales for a specified postcode
+                        ApiBuilder.path("postcode/{postcode}", () -> {
+                            ApiBuilder.get(ctx -> salesHandler.findSaleByPostCode(ctx, ctx.pathParam("postcode")));
+                        });
 
-        }
+                        // Get average price for a specified date range
+                        // format dates as YYYY-MM-DD
+                        ApiBuilder.path("/average-price/dates/{startDate}/{endDate}", () -> {
+                            ApiBuilder.get(ctx -> salesHandler.handleAveragePriceByDateRange(ctx, ctx.pathParam("startDate"), ctx.pathParam("endDate")));
+                        });
+
+                        // Get list of sales under a specified price
+                        ApiBuilder.path("/under/{price}", () -> {
+                            ApiBuilder.get(ctx -> salesHandler.handleSalesUnderPrice(ctx, ctx.pathParam("price")));
+                        });
+                    });
+                });
+            }).start(7070);
+        };
 }
 
 

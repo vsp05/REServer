@@ -1,6 +1,12 @@
 package sales;
 
 import io.javalin.http.Context;
+import io.javalin.openapi.HttpMethod;
+import io.javalin.openapi.OpenApi;
+import io.javalin.openapi.OpenApiContent;
+import io.javalin.openapi.OpenApiParam;
+import io.javalin.openapi.OpenApiRequestBody;
+import io.javalin.openapi.OpenApiResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +24,18 @@ public class SalesController {
         this.homeSales = homeSales;
     }
 
+    @OpenApi(
+            path = "/sales",
+            methods = HttpMethod.POST,
+            summary = "Create a new home sale",
+            operationId = "createSale",
+            tags = {"Sales"},
+            requestBody = @OpenApiRequestBody(content = @OpenApiContent(from = HomeSale.class)),
+            responses = {
+                    @OpenApiResponse(status = "201", description = "Sale created"),
+                    @OpenApiResponse(status = "400", description = "Failed to add sale")
+            }
+    )
     // implements POST /sales
     public void createSale(final Context ctx) {
 
@@ -36,6 +54,17 @@ public class SalesController {
         }
     }
 
+    @OpenApi(
+            path = "/sales",
+            methods = HttpMethod.GET,
+            summary = "Get all home sales",
+            operationId = "getAllSales",
+            tags = {"Sales"},
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = HomeSale[].class)),
+                    @OpenApiResponse(status = "404", description = "No sales found")
+            }
+    )
     // implements Get /sales
     public void handleAllSales(final Context ctx) {
         final List <HomeSale> allSales = homeSales.handleAllSales();
@@ -48,6 +77,20 @@ public class SalesController {
         }
     }
 
+    @OpenApi(
+            path = "/sales/{saleID}",
+            methods = HttpMethod.GET,
+            summary = "Get a sale by its ID",
+            operationId = "getSaleByID",
+            tags = {"Sales"},
+            pathParams = {
+                    @OpenApiParam(name = "saleID", description = "ID of the sale to retrieve")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = HomeSale.class)),
+                    @OpenApiResponse(status = "404", description = "Sale not found")
+            }
+    )
     // implements GET /sales/{saleID}
     public void handleSaleByID(final Context ctx, final String id) {
 
@@ -57,6 +100,20 @@ public class SalesController {
 
     }
 
+    @OpenApi(
+            path = "/sales/postcode/{postcode}",
+            methods = HttpMethod.GET,
+            summary = "Find sales by postcode",
+            operationId = "findSaleByPostCode",
+            tags = {"Sales"},
+            pathParams = {
+                    @OpenApiParam(name = "postcode", description = "Postcode to filter sales")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = HomeSale[].class)),
+                    @OpenApiResponse(status = "404", description = "No sales found for postcode")
+            }
+    )
     // Implements GET /sales/postcode/{postcodeID}
 
     public void findSaleByPostCode(final Context ctx, final String postCode) {
@@ -70,6 +127,21 @@ public class SalesController {
         }
     }
 
+    @OpenApi(
+            path = "/sales/average-price/dates/{startDate}/{endDate}",
+            methods = HttpMethod.GET,
+            summary = "Get average sale price within a date range",
+            operationId = "getAveragePriceByDateRange",
+            tags = {"Sales"},
+            pathParams = {
+                    @OpenApiParam(name = "startDate", description = "Start date (YYYY-MM-DD)"),
+                    @OpenApiParam(name = "endDate", description = "End date (YYYY-MM-DD)")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", description = "Average price returned"),
+                    @OpenApiResponse(status = "404", description = "No prices found for date range")
+            }
+    )
     // implements GET /average-price/dates/{startDate}/{endDate}
     // format dates as YYYY-MM-DD
     public void handleAveragePriceByDateRange(final Context ctx, final String startDate, final String endDate) {
@@ -83,6 +155,21 @@ public class SalesController {
         }
     }
 
+    @OpenApi(
+            path = "/sales/sales/under/{price}",
+            methods = HttpMethod.GET,
+            summary = "Get sales under a specified price",
+            operationId = "getSalesUnderPrice",
+            tags = {"Sales"},
+            pathParams = {
+                    @OpenApiParam(name = "price", description = "Maximum sale price (e.g. 500000)")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", content = @OpenApiContent(from = HomeSale[].class)),
+                    @OpenApiResponse(status = "400", description = "Invalid price specified"),
+                    @OpenApiResponse(status = "404", description = "No sales under price found")
+            }
+    )
     // implements GET /sales/under/{price}
     public void handleSalesUnderPrice(final Context ctx, final String price) {
         final int priceInt = Integer.parseInt(price);
