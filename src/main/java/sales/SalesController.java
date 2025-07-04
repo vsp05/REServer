@@ -13,9 +13,14 @@ import java.util.Optional;
 
 public class SalesController {
 
-    private SalesDAO homeSales;
+    // errorprone: Avoid Literals In If Condition
+    private static final double DEFAULT_AVERAGE_PRICE = 0.0;
+    private static final String NO_PRICES_MSG = "No prices found for date range. Try formatting dates as YYYY-MM-DD";
 
-    public SalesController(SalesDAO homeSales) {
+
+    private final SalesDAO homeSales;
+
+    public SalesController(final SalesDAO homeSales) {
         this.homeSales = homeSales;
     }
 
@@ -32,11 +37,11 @@ public class SalesController {
             }
     )
     // implements POST /sales
-    public void createSale(Context ctx) {
+    public void createSale(final Context ctx) {
 
         // Extract Home Sale from request body
         // TO DO override Validator exception method to report better error message
-        HomeSale sale = ctx.bodyValidator(HomeSale.class)
+        final HomeSale sale = ctx.bodyValidator(HomeSale.class)
                             .get();
 
         // store new sale in data set
@@ -61,8 +66,8 @@ public class SalesController {
             }
     )
     // implements Get /sales
-    public void getAllSales(Context ctx) {
-        List <HomeSale> allSales = homeSales.getAllSales();
+    public void handleAllSales(final Context ctx) {
+        final List <HomeSale> allSales = homeSales.handleAllSales();
         if (allSales.isEmpty()) {
             ctx.result("No Sales Found");
             ctx.status(404);
@@ -87,9 +92,9 @@ public class SalesController {
             }
     )
     // implements GET /sales/{saleID}
-    public void getSaleByID(Context ctx, String id) {
+    public void handleSaleByID(final Context ctx, final String id) {
 
-        Optional<HomeSale> sale = homeSales.getSaleById(id);
+        final Optional<HomeSale> sale = homeSales.handleSaleByID(id);
         sale.map(ctx::json)
                 .orElseGet (() -> error (ctx, "Sale not found", 404));
 
@@ -110,8 +115,9 @@ public class SalesController {
             }
     )
     // Implements GET /sales/postcode/{postcodeID}
-    public void findSaleByPostCode(Context ctx, String postCode) {
-        List<HomeSale> sales = homeSales.getSalesByPostCode(postCode);
+
+    public void findSaleByPostCode(final Context ctx, final String postCode) {
+        final List<HomeSale> sales = homeSales.getSalesByPostCode(postCode);
         if (sales.isEmpty()) {
             ctx.result("No sales for postcode found");
             ctx.status(404);
@@ -138,10 +144,10 @@ public class SalesController {
     )
     // implements GET /average-price/dates/{startDate}/{endDate}
     // format dates as YYYY-MM-DD
-    public void getAveragePriceByDateRange(Context ctx, String startDate, String endDate) {
-        double averagePrice = homeSales.getAveragePriceByDateRange(startDate, endDate);
-        if (averagePrice == 0.0) {
-            ctx.result("No prices found for date range. Try formatting dates as YYYY-MM-DD");
+    public void handleAveragePriceByDateRange(final Context ctx, final String startDate, final String endDate) {
+        final double averagePrice = homeSales.handleAveragePriceByDateRange(startDate, endDate);
+        if (averagePrice == DEFAULT_AVERAGE_PRICE) {
+            ctx.result(NO_PRICES_MSG);
             ctx.status(404);
         } else {
             ctx.json(averagePrice);
@@ -165,8 +171,8 @@ public class SalesController {
             }
     )
     // implements GET /sales/under/{price}
-    public void getSalesUnderPrice(Context ctx, String price) {
-        int priceInt = Integer.parseInt(price);
+    public void handleSalesUnderPrice(final Context ctx, final String price) {
+        final int priceInt = Integer.parseInt(price);
 
         if (priceInt <= 0) {
             ctx.result("Invalid price specified");
@@ -175,7 +181,7 @@ public class SalesController {
         }
 
         // Get list of sales under the specified price
-        List<HomeSale> totalSales = homeSales.getSalesUnderPrice(priceInt);
+        final List<HomeSale> totalSales = homeSales.handleSalesUnderPrice(priceInt);
 
         if (totalSales.isEmpty()) {
             ctx.result("No sales under price found");
@@ -187,7 +193,7 @@ public class SalesController {
     }
 
 
-    private Context error(Context ctx, String msg, int code) {
+    private Context error(final Context ctx, final String msg, final int code) {
         ctx.result(msg);
         ctx.status(code);
         return ctx;

@@ -4,22 +4,26 @@ import io.javalin.apibuilder.ApiBuilder;
 import io.javalin.openapi.plugin.OpenApiPlugin;
 import io.javalin.openapi.plugin.redoc.ReDocPlugin;
 import io.javalin.openapi.plugin.swagger.SwaggerPlugin;
+import io.javalin.config.JavalinConfig;
+import io.javalin.config.RouterConfig;
 import sales.SalesDAO;
 import sales.SalesController;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings({"PMD.UseUtilityClass", "PMD.LawOfDemeter"})
 
 
 public class REServer {
-        private static final Logger LOG = LoggerFactory.getLogger(REServer.class);
-
         public static void main(String[] args) {
+            // in memory test data store
+            final var sales = new SalesDAO();
+          
+            // API implementation
+            final SalesController salesHandler = new SalesController(sales);
 
-            var sales = new SalesDAO();
-            SalesController salesHandler = new SalesController(sales);
-
+            // start Javalin on port 7070
             Javalin.create(config -> {
                 config.registerPlugin(new OpenApiPlugin(pluginConfig -> {
                     pluginConfig.withDefinitionConfiguration((version, definition) -> {
@@ -31,15 +35,20 @@ public class REServer {
                 config.registerPlugin(new ReDocPlugin(uiConfig ->
                         uiConfig.setUiPath("/docs/redoc")));
 
+                // configure endpoint handlers to process HTTP requests
                 config.router.apiBuilder(() -> {
                     ApiBuilder.path("sales", () -> {
+                        // get all sales records - could be big!
                         ApiBuilder.get(salesHandler::getAllSales);
+                        // create a new sales record
                         ApiBuilder.post(salesHandler::createSale);
 
+                        // return a sale by sale ID
                         ApiBuilder.path("{saleID}", () -> {
                             ApiBuilder.get(ctx -> salesHandler.getSaleByID(ctx, ctx.pathParam("saleID")));
                         });
 
+                        // Get all sales for a specified postcode
                         ApiBuilder.path("postcode/{postcode}", () -> {
                             ApiBuilder.get(ctx -> salesHandler.findSaleByPostCode(ctx, ctx.pathParam("postcode")));
                         });
