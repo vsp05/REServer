@@ -7,14 +7,14 @@ import java.util.Optional;
 
 public class SalesController {
 
-    private SalesDAO homeSales;
+    private final SalesDAO homeSales;
 
-    public SalesController(SalesDAO homeSales) {
+    public SalesController(final SalesDAO homeSales) {
         this.homeSales = homeSales;
     }
 
     // implements POST /sales
-    public void createSale(Context ctx) {
+    public void createSale(final Context ctx) {
 
         // Extract Home Sale from request body
         // TO DO override Validator exception method to report better error message
@@ -32,7 +32,7 @@ public class SalesController {
     }
 
     // implements Get /sales
-    public void getAllSales(Context ctx) {
+    public void getAllSales(final Context ctx) {
         List <HomeSale> allSales = homeSales.getAllSales();
         if (allSales.isEmpty()) {
             ctx.result("No Sales Found");
@@ -44,7 +44,7 @@ public class SalesController {
     }
 
     // implements GET /sales/{saleID}
-    public void getSaleByID(Context ctx, String id) {
+    public void getSaleByID(final Context ctx, final String id) {
 
         Optional<HomeSale> sale = homeSales.getSaleById(id);
         sale.map(ctx::json)
@@ -53,7 +53,7 @@ public class SalesController {
     }
 
     // Implements GET /sales/postcode/{postcodeID}
-    public void findSaleByPostCode(Context ctx, String postCode) {
+    public void findSaleByPostCode(final Context ctx, final String postCode) {
         List<HomeSale> sales = homeSales.getSalesByPostCode(postCode);
         if (sales.isEmpty()) {
             ctx.result("No sales for postcode found");
@@ -66,7 +66,7 @@ public class SalesController {
 
     // implements GET /average-price/dates/{startDate}/{endDate}
     // format dates as YYYY-MM-DD
-    public void getAveragePriceByDateRange(Context ctx, String startDate, String endDate) {
+    public void getAveragePriceByDateRange(final Context ctx, final String startDate, final String endDate) {
         double averagePrice = homeSales.getAveragePriceByDateRange(startDate, endDate);
         if (averagePrice == 0.0) {
             ctx.result("No prices found for date range. Try formatting dates as YYYY-MM-DD");
@@ -78,7 +78,7 @@ public class SalesController {
     }
 
     // implements GET /sales/under/{price}
-    public void getSalesUnderPrice(Context ctx, String price) {
+    public void getSalesUnderPrice(final Context ctx, final String price) {
         int priceInt = Integer.parseInt(price);
 
         if (priceInt <= 0) {
@@ -100,7 +100,7 @@ public class SalesController {
     }
 
 
-    private Context error(Context ctx, String msg, int code) {
+    private Context error(final Context ctx, final String msg, final int code) {
         ctx.result(msg);
         ctx.status(code);
         return ctx;
