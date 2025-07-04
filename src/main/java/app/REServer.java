@@ -1,6 +1,9 @@
 package app;
 import io.javalin.Javalin;
-import io.javalin.config.JavalinConfig;
+import io.javalin.apibuilder.ApiBuilder;
+import io.javalin.openapi.plugin.OpenApiPlugin;
+import io.javalin.openapi.plugin.redoc.ReDocPlugin;
+import io.javalin.openapi.plugin.swagger.SwaggerPlugin;
 import sales.SalesDAO;
 import sales.SalesController;
 
@@ -14,51 +17,47 @@ public class REServer {
 
         public static void main(String[] args) {
 
-            // in memory test data store
             var sales = new SalesDAO();
-
-            // API implementation
             SalesController salesHandler = new SalesController(sales);
 
-            // start Javalin on port 7070
-            var app = Javalin.create()
-                    .get("/", ctx -> ctx.result("Real Estate server is running"))
-                    .start(7070);
+            Javalin.create(config -> {
+                config.registerPlugin(new OpenApiPlugin(pluginConfig -> {
+                    pluginConfig.withDefinitionConfiguration((version, definition) -> {
+                        definition.withOpenApiInfo(info -> info.setTitle("Real Estate Server Docs"));
+                    });
+                }));
+                config.registerPlugin(new SwaggerPlugin(uiConfig ->
+                        uiConfig.setUiPath("/docs/swagger")));
+                config.registerPlugin(new ReDocPlugin(uiConfig ->
+                        uiConfig.setUiPath("/docs/redoc")));
 
-            // configure endpoint handlers to process HTTP requests
-            JavalinConfig config = new JavalinConfig();
-            config.router.apiBuilder(() -> {
-                // Sales records are immutable hence no PUT and DELETE
+                config.router.apiBuilder(() -> {
+                    ApiBuilder.path("sales", () -> {
+                        ApiBuilder.get(salesHandler::getAllSales);
+                        ApiBuilder.post(salesHandler::createSale);
 
-                // return a sale by sale ID
-                app.get("/sales/{saleID}", ctx -> {
-                    salesHandler.getSaleByID(ctx, ctx.pathParam("saleID"));
-                });
-                // get all sales records - could be big!
-                app.get("/sales", ctx -> {
-                    salesHandler.getAllSales(ctx);
-                });
-                // create a new sales record
-                app.post("/sales", ctx -> {
-                    salesHandler.createSale(ctx);
-                });
-                // Get all sales for a specified postcode
-                app.get("/sales/postcode/{postcode}", ctx -> {
-                    salesHandler.findSaleByPostCode(ctx, ctx.pathParam("postcode"));
-                });
-                // Get average price for a specified date range
-                // format dates as YYYY-MM-DD
-                app.get("/average-price/dates/{startDate}/{endDate}", ctx -> {
-                    salesHandler.getAveragePriceByDateRange(ctx, ctx.pathParam("startDate"), ctx.pathParam("endDate"));
-                });
-                // Get list of sales under a specified price
-                app.get("/sales/under/{price}", ctx -> {
-                    salesHandler.getSalesUnderPrice(ctx, ctx.pathParam("price"));
-                }); 
-            });
+                        ApiBuilder.path("{saleID}", () -> {
+                            ApiBuilder.get(ctx -> salesHandler.getSaleByID(ctx, ctx.pathParam("saleID")));
+                        });
 
+                        ApiBuilder.path("postcode/{postcode}", () -> {
+                            ApiBuilder.get(ctx -> salesHandler.findSaleByPostCode(ctx, ctx.pathParam("postcode")));
+                        });
 
-        }
+                        // Get average price for a specified date range
+                        // format dates as YYYY-MM-DD
+                        ApiBuilder.path("/average-price/dates/{startDate}/{endDate}", () -> {
+                            ApiBuilder.get(ctx -> salesHandler.getAveragePriceByDateRange(ctx, ctx.pathParam("startDate"), ctx.pathParam("endDate")));
+                        });
+
+                        // Get list of sales under a specified price
+                        ApiBuilder.path("/sales/under/{price}", () -> {
+                            ApiBuilder.get(ctx -> salesHandler.getSalesUnderPrice(ctx, ctx.pathParam("price")));
+                        });
+                    });
+                });
+            }).start(7070);
+        };
 }
 
 
