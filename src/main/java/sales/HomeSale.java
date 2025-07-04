@@ -1,6 +1,6 @@
 package sales;
 
-@SuppressWarnings("PMD.TooManyFields")
+@SuppressWarnings({"PMD.TooManyFields", "PMD.DataClass", "PMD.ExcessiveParameterList"})
 
 // Simple class to provide test data in SalesDAO
 public class HomeSale {
