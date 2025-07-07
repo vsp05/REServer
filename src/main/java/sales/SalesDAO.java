@@ -67,8 +67,8 @@ public class SalesDAO {
                 .append("nature_of_property", homeSale.natureOfProperty)
                 .append("primary_purpose", homeSale.primaryPurpose)
                 .append("legal_description", homeSale.legalDescription)
-                .append("post_code_accessed_count", homeSale.postCodeAccessedCount)
-                .append("property_accessed_count", homeSale.propertyAccessedCount);
+                .append("property_accessed_count", homeSale.propertyAccessedCount)
+                .append("post_code_accessed_count", homeSale.postCodeAccessedCount);
     }
 
     private Integer parseToInt(final Object obj) {
@@ -119,8 +119,8 @@ public class SalesDAO {
                parseToString(doc.get("nature_of_property")),   
                doc.getString("primary_purpose"),
                parseToString(doc.get("legal_description")),
-               parseToInt(doc.get("post_code_accessed_count")),
-               parseToInt(doc.get("property_accessed_count"))
+               parseToInt(doc.get("property_accessed_count")),
+               parseToInt(doc.get("post_code_accessed_count"))
        );
     }
 
@@ -153,6 +153,7 @@ public class SalesDAO {
             final Document doc = collection.find(Filters.eq("property_id", parseToInt(propertyID))).first();
             if (doc != null) {
                 result = Optional.of(documentToHomeSale(doc));
+                collection.updateOne(Filters.eq("property_id", parseToInt(propertyID)), new Document("$inc", new Document("property_accessed_count", 1)));
             }
         } catch (MongoException e) {
             result = Optional.empty();
