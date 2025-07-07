@@ -192,6 +192,13 @@ public class SalesController {
         }
     }
 
+    // implements GET /sales/postcode/{postcode}/accessed-count
+    public void handlePostCodeAccessedCount(final Context ctx, final String postCode) {
+        final int accessedCount = homeSales.getPostCodeAccessedCount(postCode);
+        ctx.json(accessedCount);
+        ctx.status(200);
+    }
+
 
     private Context error(final Context ctx, final String msg, final int code) {
         ctx.result(msg);

@@ -63,6 +63,11 @@ public class REServer {
                         ApiBuilder.path("/under/{price}", () -> {
                             ApiBuilder.get(ctx -> salesHandler.handleSalesUnderPrice(ctx, ctx.pathParam("price")));
                         });
+
+                        // Get the number of times a postcode has been accessed
+                        ApiBuilder.path("/postcode/{postcode}/accessed-count", () -> {
+                            ApiBuilder.get(ctx -> salesHandler.handlePostCodeAccessedCount(ctx, ctx.pathParam("postcode")));
+                        });
                     });
                 });
             }).start(7070);

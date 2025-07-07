@@ -251,4 +251,15 @@ public class SalesDAO {
         return sales;
     }
 
+    // returns the number of times a postcode has been accessed
+    public int getPostCodeAccessedCount(final String postCode) {
+        int result = 0;
+        try {
+            result = collection.find(Filters.eq("post_code", parseToInt(postCode))).first().getInteger("post_code_accessed_count");
+        } catch (Exception e) {
+            result = 0;
+        }
+        return result;
+    }
+
 }
