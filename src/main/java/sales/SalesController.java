@@ -199,6 +199,12 @@ public class SalesController {
         ctx.status(200);
     }
 
+    // implements GET /sales/property/{propertyID}/accessed-count
+    public void handlePropertyAccessedCount(final Context ctx, final String propertyID) {
+        final int accessedCount = homeSales.getPropertyAccessedCount(propertyID);
+        ctx.json(accessedCount);
+        ctx.status(200);
+    }
 
     private Context error(final Context ctx, final String msg, final int code) {
         ctx.result(msg);

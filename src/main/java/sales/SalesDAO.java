@@ -262,4 +262,15 @@ public class SalesDAO {
         return result;
     }
 
+    // returns the number of times a property has been accessed
+    public int getPropertyAccessedCount(final String propertyID) {
+        int result = 0;
+        try {
+            result = collection.find(Filters.eq("property_id", parseToInt(propertyID))).first().getInteger("property_accessed_count");
+        } catch (Exception e) {
+            result = 0;
+        }
+        return result;
+    }
+
 }
