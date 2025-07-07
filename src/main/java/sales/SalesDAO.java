@@ -118,7 +118,9 @@ public class SalesDAO {
                doc.getString("zoning"),
                parseToString(doc.get("nature_of_property")),   
                doc.getString("primary_purpose"),
-               parseToString(doc.get("legal_description"))
+               parseToString(doc.get("legal_description")),
+               parseToInt(doc.get("post_code_accessed_count")),
+               parseToInt(doc.get("property_accessed_count"))
        );
     }
 
@@ -145,14 +147,13 @@ public class SalesDAO {
     }
 
     public Optional<HomeSale> handleSaleByID(final String propertyID) {
-        Optional<HomeSale> result = Optional.empty(); // default value
+        Optional<HomeSale> result = Optional.empty();
 
         try {
             final Document doc = collection.find(Filters.eq("property_id", parseToInt(propertyID))).first();
             if (doc != null) {
                 result = Optional.of(documentToHomeSale(doc));
             }
-            // if doc is null, result remains Optional.empty()
         } catch (MongoException e) {
             result = Optional.empty();
         }
