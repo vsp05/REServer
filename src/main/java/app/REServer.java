@@ -70,7 +70,7 @@ public class REServer {
                         });
 
                         // Get the number of times a property has been accessed
-                        ApiBuilder.path("/property/{propertyID}/accessed-count", () -> {
+                        ApiBuilder.path("/{propertyID}/accessed-count", () -> {
                             ApiBuilder.get(ctx -> salesHandler.handlePropertyAccessedCount(ctx, ctx.pathParam("propertyID")));
                         });
                     });
