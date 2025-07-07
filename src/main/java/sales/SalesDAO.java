@@ -30,7 +30,7 @@ public class SalesDAO {
     private final MongoCollection<Document> collection;
 
     public SalesDAO() {
-        String uri = "mongodb+srv://vspillai02:8CjpUFgayTxa4Lk9@cs4530exercise1.a7aa12o.mongodb.net/?retryWrites=true&w=majority&appName=cs4530exercise1";
+        String uri = "mongodb+srv://vspillai02:cs4530exercise1@cs4530exercise1.a7aa12o.mongodb.net/?retryWrites=true&w=majority&appName=cs4530exercise1";
         ServerApi serverApi = ServerApi.builder()
         .version(ServerApiVersion.V1)
         .build();
@@ -66,7 +66,9 @@ public class SalesDAO {
                 .append("zoning", homeSale.zoning)
                 .append("nature_of_property", homeSale.natureOfProperty)
                 .append("primary_purpose", homeSale.primaryPurpose)
-                .append("legal_description", homeSale.legalDescription);
+                .append("legal_description", homeSale.legalDescription)
+                .append("post_code_accessed_count", homeSale.postCodeAccessedCount)
+                .append("property_accessed_count", homeSale.propertyAccessedCount);
     }
 
     private Integer parseToInt(final Object obj) {
@@ -120,8 +122,18 @@ public class SalesDAO {
        );
     }
 
-    public boolean newSale(final HomeSale homeSale) {
+    public boolean newSale(HomeSale homeSale) {
         boolean success = false;
+        int postCodeAccessedCount = 0;
+
+        try {
+            postCodeAccessedCount = getSalesByPostCode(String.valueOf(homeSale.postCode), false).get(0).postCodeAccessedCount;
+        } catch (Exception e) {
+            postCodeAccessedCount = 0;
+        }
+
+        homeSale.postCodeAccessedCount = postCodeAccessedCount;
+
         try {
             final Document doc = homeSaleToDocument(homeSale);
             collection.insertOne(doc);
@@ -149,7 +161,7 @@ public class SalesDAO {
     }
 
     // returns a List of homesales  in a given postCode
-    public List<HomeSale> getSalesByPostCode(final String postCode) {
+    public List<HomeSale> getSalesByPostCode(final String postCode, final boolean incrementAccessCount) {
         List<HomeSale> sales = new ArrayList<>();
 
         try {

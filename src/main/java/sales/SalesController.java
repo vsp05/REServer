@@ -117,7 +117,7 @@ public class SalesController {
     // Implements GET /sales/postcode/{postcodeID}
 
     public void findSaleByPostCode(final Context ctx, final String postCode) {
-        final List<HomeSale> sales = homeSales.getSalesByPostCode(postCode);
+        final List<HomeSale> sales = homeSales.getSalesByPostCode(postCode, true);
         if (sales.isEmpty()) {
             ctx.result("No sales for postcode found");
             ctx.status(404);

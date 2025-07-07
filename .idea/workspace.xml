@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="de501043-aafb-4a41-9e24-49285bd605ad" name="Changes" comment="remove unused imports">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app/REServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/REServer.java" afterDir="false" />
-    </list>
+    <list default="true" id="de501043-aafb-4a41-9e24-49285bd605ad" name="Changes" comment="remove unused imports" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -56,7 +53,7 @@
     "Application.REServer.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "#5 on documentation",
+    "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -113,7 +110,7 @@
       <workItem from="1746429621778" duration="977000" />
       <workItem from="1751407628920" duration="3380000" />
       <workItem from="1751423791133" duration="974000" />
-      <workItem from="1751596161208" duration="902000" />
+      <workItem from="1751596161208" duration="1762000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />

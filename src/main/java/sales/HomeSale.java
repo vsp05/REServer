@@ -1,5 +1,7 @@
 package sales;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @SuppressWarnings({"PMD.TooManyFields", "PMD.DataClass", "PMD.ExcessiveParameterList"})
 
 // Simple class to provide test data in SalesDAO
@@ -22,6 +24,12 @@ public class HomeSale {
     public String natureOfProperty;
     public String primaryPurpose;
     public String legalDescription;
+    
+    @JsonIgnore
+    public int propertyAccessedCount;
+    
+    @JsonIgnore
+    public int postCodeAccessedCount;
 
 
     public HomeSale(final int propertyId, final String downloadDate, final String councilName, final int purchasePrice, final String address, final int postCode,
@@ -44,9 +52,10 @@ public class HomeSale {
        this.natureOfProperty = natureOfProperty;
        this.primaryPurpose = primaryPurpose;
        this.legalDescription = legalDescription;
+       this.propertyAccessedCount = 0;
+       this.postCodeAccessedCount = 0;
    }
 
-    // needed for JSON conversion
     public HomeSale() {}
 
 
