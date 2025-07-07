@@ -167,9 +167,13 @@ public class SalesDAO {
         List<HomeSale> sales = new ArrayList<>();
 
         try {
+            int previousPostCodeAccessedCount = collection.find(Filters.eq("post_code", parseToInt(postCode))).first().getInteger("post_code_accessed_count");
             List<HomeSale> finalSales = sales;
             collection.find(Filters.eq("post_code", parseToInt(postCode)))
                 .forEach(doc -> finalSales.add(documentToHomeSale(doc)));
+            if (incrementAccessCount) {
+                collection.updateMany(Filters.eq("post_code", parseToInt(postCode)), new Document("$set", new Document("post_code_accessed_count", previousPostCodeAccessedCount + 1)));
+            }
         } catch (MongoException e) {
             sales = Collections.emptyList(); // Reset to empty list on error
         }
