@@ -30,7 +30,7 @@ public class SalesDAO {
     private final MongoCollection<Document> collection;
 
     public SalesDAO() {
-        String uri = "mongodb+srv://vspillai02:8CjpUFgayTxa4Lk9@cs4530exercise1.a7aa12o.mongodb.net/?retryWrites=true&w=majority&appName=cs4530exercise1";
+        String uri = "mongodb+srv://vspillai02:cs4530exercise1@cs4530exercise1.a7aa12o.mongodb.net/?retryWrites=true&w=majority&appName=cs4530exercise1";
         ServerApi serverApi = ServerApi.builder()
         .version(ServerApiVersion.V1)
         .build();
@@ -66,7 +66,9 @@ public class SalesDAO {
                 .append("zoning", homeSale.zoning)
                 .append("nature_of_property", homeSale.natureOfProperty)
                 .append("primary_purpose", homeSale.primaryPurpose)
-                .append("legal_description", homeSale.legalDescription);
+                .append("legal_description", homeSale.legalDescription)
+                .append("property_accessed_count", homeSale.propertyAccessedCount)
+                .append("post_code_accessed_count", homeSale.postCodeAccessedCount);
     }
 
     private Integer parseToInt(final Object obj) {
@@ -116,12 +118,24 @@ public class SalesDAO {
                doc.getString("zoning"),
                parseToString(doc.get("nature_of_property")),   
                doc.getString("primary_purpose"),
-               parseToString(doc.get("legal_description"))
+               parseToString(doc.get("legal_description")),
+               parseToInt(doc.get("property_accessed_count")),
+               parseToInt(doc.get("post_code_accessed_count"))
        );
     }
 
-    public boolean newSale(final HomeSale homeSale) {
+    public boolean newSale(HomeSale homeSale) {
         boolean success = false;
+        int postCodeAccessedCount = 0;
+
+        try {
+            postCodeAccessedCount = getSalesByPostCode(String.valueOf(homeSale.postCode), false).get(0).postCodeAccessedCount;
+        } catch (Exception e) {
+            postCodeAccessedCount = 0;
+        }
+
+        homeSale.postCodeAccessedCount = postCodeAccessedCount;
+
         try {
             final Document doc = homeSaleToDocument(homeSale);
             collection.insertOne(doc);
@@ -133,14 +147,14 @@ public class SalesDAO {
     }
 
     public Optional<HomeSale> handleSaleByID(final String propertyID) {
-        Optional<HomeSale> result = Optional.empty(); // default value
+        Optional<HomeSale> result = Optional.empty();
 
         try {
             final Document doc = collection.find(Filters.eq("property_id", parseToInt(propertyID))).first();
             if (doc != null) {
                 result = Optional.of(documentToHomeSale(doc));
+                collection.updateOne(Filters.eq("property_id", parseToInt(propertyID)), new Document("$inc", new Document("property_accessed_count", 1)));
             }
-            // if doc is null, result remains Optional.empty()
         } catch (MongoException e) {
             result = Optional.empty();
         }
@@ -149,13 +163,17 @@ public class SalesDAO {
     }
 
     // returns a List of homesales  in a given postCode
-    public List<HomeSale> getSalesByPostCode(final String postCode) {
+    public List<HomeSale> getSalesByPostCode(final String postCode, final boolean incrementAccessCount) {
         List<HomeSale> sales = new ArrayList<>();
 
         try {
+            int previousPostCodeAccessedCount = collection.find(Filters.eq("post_code", parseToInt(postCode))).first().getInteger("post_code_accessed_count");
             List<HomeSale> finalSales = sales;
             collection.find(Filters.eq("post_code", parseToInt(postCode)))
                 .forEach(doc -> finalSales.add(documentToHomeSale(doc)));
+            if (incrementAccessCount) {
+                collection.updateMany(Filters.eq("post_code", parseToInt(postCode)), new Document("$set", new Document("post_code_accessed_count", previousPostCodeAccessedCount + 1)));
+            }
         } catch (MongoException e) {
             sales = Collections.emptyList(); // Reset to empty list on error
         }
@@ -231,6 +249,28 @@ public class SalesDAO {
         }
 
         return sales;
+    }
+
+    // returns the number of times a postcode has been accessed
+    public int getPostCodeAccessedCount(final String postCode) {
+        int result = 0;
+        try {
+            result = collection.find(Filters.eq("post_code", parseToInt(postCode))).first().getInteger("post_code_accessed_count");
+        } catch (Exception e) {
+            result = 0;
+        }
+        return result;
+    }
+
+    // returns the number of times a property has been accessed
+    public int getPropertyAccessedCount(final String propertyID) {
+        int result = 0;
+        try {
+            result = collection.find(Filters.eq("property_id", parseToInt(propertyID))).first().getInteger("property_accessed_count");
+        } catch (Exception e) {
+            result = 0;
+        }
+        return result;
     }
 
 }

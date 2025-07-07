@@ -117,7 +117,7 @@ public class SalesController {
     // Implements GET /sales/postcode/{postcodeID}
 
     public void findSaleByPostCode(final Context ctx, final String postCode) {
-        final List<HomeSale> sales = homeSales.getSalesByPostCode(postCode);
+        final List<HomeSale> sales = homeSales.getSalesByPostCode(postCode, true);
         if (sales.isEmpty()) {
             ctx.result("No sales for postcode found");
             ctx.status(404);
@@ -192,6 +192,19 @@ public class SalesController {
         }
     }
 
+    // implements GET /sales/postcode/{postcode}/accessed-count
+    public void handlePostCodeAccessedCount(final Context ctx, final String postCode) {
+        final int accessedCount = homeSales.getPostCodeAccessedCount(postCode);
+        ctx.json(accessedCount);
+        ctx.status(200);
+    }
+
+    // implements GET /sales/{propertyID}/accessed-count
+    public void handlePropertyAccessedCount(final Context ctx, final String propertyID) {
+        final int accessedCount = homeSales.getPropertyAccessedCount(propertyID);
+        ctx.json(accessedCount);
+        ctx.status(200);
+    }
 
     private Context error(final Context ctx, final String msg, final int code) {
         ctx.result(msg);

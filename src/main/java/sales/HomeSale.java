@@ -1,5 +1,4 @@
 package sales;
-
 @SuppressWarnings({"PMD.TooManyFields", "PMD.DataClass", "PMD.ExcessiveParameterList"})
 
 // Simple class to provide test data in SalesDAO
@@ -22,11 +21,13 @@ public class HomeSale {
     public String natureOfProperty;
     public String primaryPurpose;
     public String legalDescription;
+    public int propertyAccessedCount;
+    public int postCodeAccessedCount;
 
 
     public HomeSale(final int propertyId, final String downloadDate, final String councilName, final int purchasePrice, final String address, final int postCode,
     final String propertyType, final String strataLotNumber, final String propertyName, final int area, final String areaType, final String contractData, 
-    final String settlementDate, final String zoning, final String natureOfProperty, final String primaryPurpose, final String legalDescription) {
+    final String settlementDate, final String zoning, final String natureOfProperty, final String primaryPurpose, final String legalDescription, final int propertyAccessedCount, final int postCodeAccessedCount) {
        this.propertyId = propertyId;
        this.downloadDate = downloadDate;
        this.councilName = councilName;       
@@ -44,9 +45,10 @@ public class HomeSale {
        this.natureOfProperty = natureOfProperty;
        this.primaryPurpose = primaryPurpose;
        this.legalDescription = legalDescription;
+       this.propertyAccessedCount = propertyAccessedCount;
+       this.postCodeAccessedCount = postCodeAccessedCount;
    }
 
-    // needed for JSON conversion
     public HomeSale() {}
 
 
