@@ -280,25 +280,39 @@ public class SalesDAO {
             int id = parseToInt(propertyID);
             System.out.println("Looking up property_id = " + id); // debug add
 
+            // First, get the current access count
+            int currentAccessCount = 0;
+            String countSql = "SELECT property_accessed_count FROM sales WHERE property_id = ?";
+            PreparedStatement countStmt = getConnection().prepareStatement(countSql);
+            countStmt.setInt(1, id);
+            ResultSet countRs = countStmt.executeQuery();
+            if (countRs.next()) {
+                currentAccessCount = countRs.getInt("property_accessed_count");
+            }
+            countRs.close();
+            countStmt.close();
+
+            // Then get the sale data
             String sql = "SELECT * FROM sales WHERE property_id = ?";
             PreparedStatement pstmt = getConnection().prepareStatement(sql);
-            pstmt.setInt(1, parseToInt(propertyID));
+            pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
                 System.out.println("Found sale for ID: " + id); //
                 result = Optional.of(resultSetToHomeSale(rs));
 
-                // Update access count
-                String updateSql = "UPDATE sales SET property_accessed_count = property_accessed_count + 1 WHERE property_id = ?";
+                // Update access count using the reliable approach
+                String updateSql = "UPDATE sales SET property_accessed_count = ? WHERE property_id = ?";
                 PreparedStatement updateStmt = getConnection().prepareStatement(updateSql);
-                updateStmt.setInt(1, parseToInt(propertyID));
-                updateStmt.executeUpdate();
+                updateStmt.setInt(1, currentAccessCount + 1);
+                updateStmt.setInt(2, id);
+                int rowsUpdated = updateStmt.executeUpdate();
+                System.out.println("Updated property access count for ID " + id + ": " + currentAccessCount + " -> " + (currentAccessCount + 1) + " (rows affected: " + rowsUpdated + ")");
                 updateStmt.close();
             } else {
                 System.out.println("No sale found for ID: " + id); // <-- ADD THIS
             }
-
 
             rs.close();
             pstmt.close();

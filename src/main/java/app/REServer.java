@@ -4,14 +4,8 @@ import io.javalin.apibuilder.ApiBuilder;
 import io.javalin.openapi.plugin.OpenApiPlugin;
 import io.javalin.openapi.plugin.redoc.ReDocPlugin;
 import io.javalin.openapi.plugin.swagger.SwaggerPlugin;
-import io.javalin.config.JavalinConfig;
-import io.javalin.config.RouterConfig;
 import sales.SalesDAO;
 import sales.SalesController;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @SuppressWarnings({"PMD.UseUtilityClass", "PMD.LawOfDemeter"})
 
 
