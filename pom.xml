@@ -6,6 +6,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>query-service</module>
+        <module>analytics-service</module>
     </modules>
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
