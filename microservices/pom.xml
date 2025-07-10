@@ -16,4 +16,11 @@
         <module>analytics-server</module>
         <module>api-gateway</module>
     </modules>
+    <dependencies>
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>5.25.0</version>
+        </dependency>   
+    </dependencies>
 </project> 

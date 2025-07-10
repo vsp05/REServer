@@ -19,9 +19,18 @@ public class PropertyController {
     private static final String NO_PRICES_MSG = "No prices found for date range. Try formatting dates as YYYY-MM-DD";
 
     private final PropertyDAO homeSales;
+    private final RabbitMQService rabbitMQService;
 
     public PropertyController(final PropertyDAO homeSales) {
         this.homeSales = homeSales;
+        this.rabbitMQService = new RabbitMQService();
+        this.rabbitMQService.initialize();
+    }
+    
+    public void close() {
+        if (rabbitMQService != null) {
+            rabbitMQService.close();
+        }
     }
 
     @OpenApi(
@@ -91,8 +100,13 @@ public class PropertyController {
     // implements GET /properties/{propertyID}
     public void handleSaleByID(final Context ctx, final String id) {
         final Optional<HomeSale> sale = homeSales.handleSaleByID(id);
-        sale.map(ctx::json)
-                .orElseGet(() -> error(ctx, "Sale not found", 404));
+        if (sale.isPresent()) {
+            // Publish property access message to RabbitMQ
+            rabbitMQService.publishPropertyAccess(id);
+            ctx.json(sale.get());
+        } else {
+            error(ctx, "Sale not found", 404);
+        }
     }
 
     @OpenApi(
@@ -116,6 +130,8 @@ public class PropertyController {
             ctx.result("No sales for postcode found");
             ctx.status(404);
         } else {
+            // Publish postcode access message to RabbitMQ
+            rabbitMQService.publishPostCodeAccess(postCode);
             ctx.json(sales);
             ctx.status(200);
         }

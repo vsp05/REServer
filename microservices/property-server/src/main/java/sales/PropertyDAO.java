@@ -138,7 +138,7 @@ public class PropertyDAO {
 
     public Optional<HomeSale> handleSaleByID(final String propertyID) {
         Optional<HomeSale> result = Optional.empty();
-
+        
         try {
             final Document doc = collection.find(Filters.eq("property_id", parseToInt(propertyID))).first();
             if (doc != null) {
