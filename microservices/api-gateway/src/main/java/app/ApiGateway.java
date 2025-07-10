@@ -166,23 +166,8 @@ public class ApiGateway {
                     .build();
 
             try (Response propertyResponse = httpClient.newCall(propertyRequest).execute()) {
-                if (propertyResponse.isSuccessful()) {
-                    // Increment property access count
-                    Request analyticsRequest = new Request.Builder()
-                            .url(ANALYTICS_SERVER_URL + "/analytics/property/" + id + "/increment")
-                            .post(RequestBody.create("", MediaType.get("application/json")))
-                            .build();
-
-                    try (Response analyticsResponse = httpClient.newCall(analyticsRequest).execute()) {
-                        // Analytics response doesn't affect the main response
-                    }
-
-                    ctx.result(propertyResponse.body().string());
-                    ctx.status(propertyResponse.code());
-                } else {
-                    ctx.result(propertyResponse.body().string());
-                    ctx.status(propertyResponse.code());
-                }
+                ctx.result(propertyResponse.body().string());
+                ctx.status(propertyResponse.code());
             }
         } catch (IOException e) {
             ctx.result("Failed to get sale");
@@ -213,23 +198,8 @@ public class ApiGateway {
                     .build();
 
             try (Response propertyResponse = httpClient.newCall(propertyRequest).execute()) {
-                if (propertyResponse.isSuccessful()) {
-                    // Increment postcode access count
-                    Request analyticsRequest = new Request.Builder()
-                            .url(ANALYTICS_SERVER_URL + "/analytics/postcode/" + postCode + "/increment")
-                            .post(RequestBody.create("", MediaType.get("application/json")))
-                            .build();
-
-                    try (Response analyticsResponse = httpClient.newCall(analyticsRequest).execute()) {
-                        // Analytics response doesn't affect the main response
-                    }
-
-                    ctx.result(propertyResponse.body().string());
-                    ctx.status(propertyResponse.code());
-                } else {
-                    ctx.result(propertyResponse.body().string());
-                    ctx.status(propertyResponse.code());
-                }
+                ctx.result(propertyResponse.body().string());
+                ctx.status(propertyResponse.code());
             }
         } catch (IOException e) {
             ctx.result("Failed to get sales by postcode");

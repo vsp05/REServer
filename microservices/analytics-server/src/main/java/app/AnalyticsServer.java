@@ -7,6 +7,7 @@ import io.javalin.openapi.plugin.redoc.ReDocPlugin;
 import io.javalin.openapi.plugin.swagger.SwaggerPlugin;
 import sales.AnalyticsDAO;
 import sales.AnalyticsController;
+import sales.RabbitMQConsumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +15,17 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings({"PMD.UseUtilityClass", "PMD.LawOfDemeter"})
 
 public class AnalyticsServer {
+    private static final Logger logger = LoggerFactory.getLogger(AnalyticsServer.class);
     public static void main(String[] args) {
         // analytics data store
         final var analytics = new AnalyticsDAO();
       
         // API implementation
         final AnalyticsController analyticsHandler = new AnalyticsController(analytics);
+
+        // Start RabbitMQ consumer
+        final RabbitMQConsumer rabbitMQConsumer = new RabbitMQConsumer(analytics);
+        rabbitMQConsumer.start();
 
         // start Javalin on port 7072
         Javalin.create(config -> {
@@ -58,5 +64,11 @@ public class AnalyticsServer {
                 });
             });
         }).start(7072);
+        
+        // Add shutdown hook to properly close RabbitMQ consumer
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("Shutting down analytics server...");
+            rabbitMQConsumer.stop();
+        }));
     }
 } 

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings({"PMD.UseUtilityClass", "PMD.LawOfDemeter"})
 
 public class PropertyServer {
+    private static final Logger logger = LoggerFactory.getLogger(PropertyServer.class);
     public static void main(String[] args) {
         // in memory test data store
         final var sales = new PropertyDAO();
@@ -64,5 +65,11 @@ public class PropertyServer {
                 });
             });
         }).start(7071);
+        
+        // Add shutdown hook to properly close RabbitMQ service
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("Shutting down property server...");
+            salesHandler.close();
+        }));
     }
 } 
